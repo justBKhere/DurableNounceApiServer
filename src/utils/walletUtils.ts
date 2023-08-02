@@ -120,6 +120,66 @@ export async function SendAssetToPlayer(tokenAddress: string, toPublicAddress: s
     }
 }
 
+export async function GetAssetFromPlayer(tokenAddress:string,userPublicKey:string, userPrivateAddress:string, quamtity: string, network?: string)
+{
+     try {
+        const connection = setConnection(network);
+        const fromAddress: any = userPublicKey;
+        const fromPrivateKey: any = userPrivateAddress;
+        const fromKeyPair = Keypair.fromSecretKey(base58ToUint8Array(userPrivateAddress));
+        const gameServerAddress = process.env.PUBLIC_KEY;
+        const gameServerPrivateKey = process.env.PRIVATE_KEY;
+
+        let sourceAccount = await getOrCreateAssociatedTokenAccount(
+            connection,
+            fromKeyPair,
+            new PublicKey(tokenAddress),
+            fromKeyPair.publicKey
+        );
+        console.log(`    Source Account: ${sourceAccount.address.toString()}`);
+
+        let destinationAccount = await getOrCreateAssociatedTokenAccount(
+            connection,
+            fromKeyPair,
+            new PublicKey(tokenAddress),
+            new PublicKey(userpuljc)
+        )
+
+        const transferInstruction: TransactionInstruction = createTransferInstruction(
+            sourceAccount.address,
+            destinationAccount.address,
+            fromKeyPair.publicKey,
+            BigInt(amount),
+
+        )
+        const transaction = new Transaction().add(transferInstruction);
+        const recentBlockhash = await connection.getLatestBlockhash();
+        transaction.recentBlockhash = recentBlockhash.blockhash;
+        console.log("transaction", transaction);
+
+        const signature = await sendAndConfirmTransaction(connection, transaction, [Keypair.fromSecretKey(base58ToUint8Array(fromPrivateKey))]);
+        const solanaExplorerUrl = `https://explorer.solana.com/tx/${signature}`;
+
+        console.log('%cClick here to view the transaction', 'color: blue; text-decoration: underline; cursor: pointer', solanaExplorerUrl);
+        if (signature) {
+            const updatedTokenBalance = await getAllTokenBalances(toPublicAddress, network);
+            return updatedTokenBalance;
+        }
+        else {
+            return null
+        }
+
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+
+export async function SendFromPlayerToTreasury(tokenAddress:string, network?:string)
+{
+
+}
+
 
 export async function ManufactureAHelperBot(tokenAddress: string, toPublicAddress: Uint8Array, network?: string) {
     try {

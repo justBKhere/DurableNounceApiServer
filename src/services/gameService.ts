@@ -24,6 +24,21 @@ export async function handleItemPickup(req: any) {
     }
 }
 
+export async function handleItemDrop(req: any) {
+    const { network, tokenAddress, level } = req.body
+    const user = await UserService.findByUuid(req.user.userId);
+    console.log("user", user);
+    console.log("tokenAddress", tokenAddress);
+    console.log("network", network);
+    const parsedLevel = parseInt(level);
+    try {
+        if (!user) {
+            return false
+        }
+        const updatedTokenBalance: any = await GetAssetFromPlayer(tokenAddress, user.privateKey, network);
+        return updatedTokenBalance;
+}
+
 export async function HandleBuildAHelperBot(req: any) {
     const { network, botAssetAddress } = req.body
     const user = await UserService.findByUuid(req.user.userId);
