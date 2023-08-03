@@ -40,7 +40,7 @@ export function generateNewWallet(): Wallet {
     return wallet;
 }
 export function setConnection(network?: string) {
-    let connection: Connection = new Connection(clusterApiUrl('mainnet-beta'), 'confirmed');
+    let connection: Connection = new Connection(clusterApiUrl('mainnet-beta'), 'finalized');
     switch (network) {
         case 'mainnet':
             connection = new Connection(clusterApiUrl('mainnet-beta'), 'confirmed');
@@ -49,10 +49,10 @@ export function setConnection(network?: string) {
             connection = new Connection(clusterApiUrl('testnet'), 'confirmed');
             break;
         case 'devnet':
-            connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
+            connection = new Connection(clusterApiUrl('devnet'), 'finalized');
         // Add more cases for other networks if needed
         default:
-            connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
+            connection = new Connection(clusterApiUrl('devnet'), 'finalized');
     }
     return connection;
 }
@@ -80,6 +80,18 @@ export async function AirdropSol(publicKeyStr: string, amount: number, network?:
     }
 }
 
+
+export async function GatherAssets(tokenAddress:string,toPublicAddress:string, amount:number, network?:string){
+    try{
+        const connection = setConnection(network);
+        const fromAddress: any = process.env.PUBLIC_KEY;
+        const fromPrivateKey: any = process.env.PRIVATE_KEY;
+        const fromKeyPair = Keypair.fromSecretKey(base58ToUint8Array(fromPrivateKey));
+    }
+    catch(error){
+        console.log(error);
+    }
+}
 export async function SendAssetToPlayer(tokenAddress: string, toPublicAddress: string, amount: number, network?: string) {
     try {
         const connection = setConnection(network);
