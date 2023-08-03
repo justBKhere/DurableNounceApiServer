@@ -43,7 +43,7 @@ const UserController = {
                 username: username,
                 hashedPassword: hashedPassword,
                 uuid: uuid,
-                privateKey: privateKey,
+                privateKey: uint8ArrayToString( privateKey),
                 publicAddress: publicAddress,
                 mnemonic: mnemonic,
                 email: email || '', // Use empty string if email is not provided

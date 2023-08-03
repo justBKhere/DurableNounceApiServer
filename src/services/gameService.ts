@@ -36,7 +36,7 @@ export async function handleItemDrop(req: any) {
         if (!user) {
             return false
         }
-        const updatedTokenBalance: any = await GetAssetFromPlayer(tokenAddress,user.publicAddress,uint8ArrayToBase58(user.privateKey), network);
+        const updatedTokenBalance: any = await GetAssetFromPlayer(tokenAddress,user.publicAddress,user.privateKey, network);
         return updatedTokenBalance;
     }
     catch (error) {

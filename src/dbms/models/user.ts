@@ -5,7 +5,7 @@ export interface User extends Document {
     username: string;
     hashedPassword: string;
     uuid: string;
-    privateKey: Uint8Array;
+    privateKey: string;
     mnemonic: string;
     publicAddress: string;
     createdAt: Date;
