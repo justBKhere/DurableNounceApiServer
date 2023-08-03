@@ -40,4 +40,4 @@ const accountInfo = await connection.getAccountInfo(nonceAccount.publicKey);
 const nonceAccountInfo  = NonceAccount.fromAccountData(accountInfo?.data as Buffer);
 
 console.log("Nonce Account: ", nonceAccountInfo);
-}
+} 
