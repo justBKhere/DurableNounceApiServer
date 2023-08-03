@@ -17,7 +17,7 @@ export async function handleItemPickup(req: any) {
         if (!user) {
             return false
         }
-        const updatedTokenBalance: any = await SendAssetToPlayer(tokenAddress, user.publicAddress,generateRandomValue(parsedLevel), network);
+        const updatedTokenBalance: any = await SendAssetToPlayer(tokenAddress, user.publicAddress, generateRandomValue(parsedLevel), network);
         return updatedTokenBalance;
 
     }
@@ -28,7 +28,7 @@ export async function handleItemPickup(req: any) {
 }
 
 export async function handleItemDrop(req: any) {
-    const { network, tokenAddress} = req.body
+    const { network, tokenAddress } = req.body
     const user = await UserService.findByUuid(req.user.userId);
     console.log("user", user);
     console.log("tokenAddress", tokenAddress);
@@ -37,7 +37,7 @@ export async function handleItemDrop(req: any) {
         if (!user) {
             return false
         }
-        const updatedTokenBalance: any = await GetAssetFromPlayer(tokenAddress,user.publicAddress, user.privateKey, '5',network);
+        const updatedTokenBalance: any = await GetAssetFromPlayer(tokenAddress, user.publicAddress, user.privateKey, '5', network);
         return updatedTokenBalance;
     }
     catch (error) {
@@ -47,29 +47,23 @@ export async function handleItemDrop(req: any) {
 }
 
 export async function manufactureBot(req: any) {
-    const { network, buildTokenAddress } = req.body
-    
-    console.log("buildTokenAddress", buildTokenAddress);
-    if(buildTokenAddress == "5259eCocGrfYVj1w4YqBJopihxStHD881b2Bbt3cSK1n")
-    {
-        //This will be fetched using NFT metadata in main usecase, hardcoding due to lack of time
-        const consumeTokenAddress = ["CLNX8gTNWFrhVPT5ED39YKgHsfPC8qitxgxqBQKiZ38k","2t5YSZjQhiWxPzoBQFeivpv2EBfjb6pYXcaEC7arCcyj","CjeGjYdCu4ccwdtaGXbbxeHsN6UV5CUr8RYEubpbvH19"];
-        const user = await UserService.findByUuid(req.user.userId);
-        console.log("user", user);
-        try {
-            if (!user) {
-                return false
-            }
-            const updatedTokenBalance: any = await ManufactureBot(consumeTokenAddress,buildTokenAddress, user.privateKey, network);
-            return updatedTokenBalance;
+
+    const { network, consumeTokenAddress, buildTokenAddress } = req.body
+    console.log("consumeTokenAddress", consumeTokenAddress);
+
+    const user = await UserService.findByUuid(req.user.userId);
+    console.log("user", user);
+    try {
+        if (!user) {
+            return false
         }
-        catch (error) {
-            console.error(error);
-            return null
-        }
+        const updatedTokenBalance: any = await ManufactureBot(consumeTokenAddress, buildTokenAddress, user.privateKey, network);
+        return updatedTokenBalance;
     }
-    
-    
+    catch (error) {
+        console.error(error);
+        return null
+    }
 }
 
 /*export async function HandleBuildAHelperBot(req: any) {
