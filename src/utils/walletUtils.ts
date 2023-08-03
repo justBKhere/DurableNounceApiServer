@@ -151,8 +151,8 @@ export async function GetAssetFromPlayer(tokenAddress:string,userPublicKey:strin
         const connection = setConnection(network);
         const fromAddress: any = userPublicKey;
         const fromPrivateKey: string = userPrivateAddress;
-     console.log("fromPrivateKey", fromPrivateKey);
-     const decodedPrivateKey = base58.decode(fromPrivateKey);
+        console.log("fromPrivateKey", fromPrivateKey);
+        const decodedPrivateKey = base58.decode(fromPrivateKey);
         const fromKeyPair = Keypair.fromSecretKey(decodedPrivateKey);
         const gameServerAddress:string = process.env.PUBLIC_KEY as string;
 
@@ -201,26 +201,43 @@ export async function GetAssetFromPlayer(tokenAddress:string,userPublicKey:strin
     }
 }
 
-export async function SendFromPlayerToTreasury(tokenAddress:string, network?:string)
-{
-
-}
 
 
-export async function ManufactureAHelperBot(tokenAddress: string, toPublicAddress: Uint8Array, network?: string) {
+
+export async function ManufactureBot(consumetokenAddress: string[],buildTokenAddress: string, clientPrivate: string, network?: string) {
     try {
         const connection = setConnection(network);
         const serverAddress: any = process.env.PUBLIC_KEY;
         const serverPrivateKey: any = process.env.PRIVATE_KEY;
         const serverKeyPair = Keypair.fromSecretKey(base58ToUint8Array(serverPrivateKey));
-        const clientKeyPair = Keypair.fromSecretKey(toPublicAddress);
+        const clientKeyPair = Keypair.fromSecretKey(base58ToUint8Array(clientPrivate));
         //bot send ix
+const transaction = new Transaction();
 
-        const sendtx = buildix(tokenAddress, serverKeyPair, clientKeyPair, 1, network);
-        const recievetx = buildix(tokenAddress, clientKeyPair, serverKeyPair, 1, network);
+        for(const tokenAddress of consumetokenAddress){
+        const receivetx = await buildix(tokenAddress, clientKeyPair, serverAddress, 20, network);
+        transaction.add(receivetx);
     }
-    catch (error) {
+const sendtx = await buildix(buildTokenAddress, serverKeyPair, clientKeyPair, 1, network);
+transaction.add(sendtx);
+const recentBlockhash = await connection.getLatestBlockhash();
+transaction.recentBlockhash = recentBlockhash.blockhash;
+console.log("transaction", transaction);
+const signature = await sendAndConfirmTransaction(connection, transaction, [Keypair.fromSecretKey(base58ToUint8Array(serverPrivateKey)), Keypair.fromSecretKey(base58ToUint8Array(clientPrivate))]);
+const solanaExplorerUrl = `https://explorer.solana.com/tx/${signature}`;
 
+        console.log('%cClick here to view the transaction', 'color: blue; text-decoration: underline; cursor: pointer', solanaExplorerUrl);
+        if (signature) {
+            const updatedTokenBalance = await getAllTokenBalances(clientKeyPair.publicKey.toString(), network);
+            return updatedTokenBalance;
+        }
+        else {
+            return null
+        }
+
+    } catch (error) {
+        console.error(error);
+        return null;
     }
 }
 

@@ -10,6 +10,7 @@ router.post('/item-pickup', authMiddleware, GameController.HandleItemPickup);
 
 router.post('/item-drop', authMiddleware, GameController.handleItemDrop);
 
+router.post('/manufacture-bots', authMiddleware, GameController.manufactureBots);
 //router.post('/build-a-battle-bot', authMiddleware, GameController.BuildABattleBot);
 
 

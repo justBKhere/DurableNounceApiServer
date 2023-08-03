@@ -1,8 +1,9 @@
 
 import base58 from 'bs58';
 import UserService from '../services/userService';
-import { GetAssetFromPlayer, ManufactureAHelperBot, SendAssetToPlayer } from '../utils/walletUtils';
+import { GetAssetFromPlayer, ManufactureBot, SendAssetToPlayer } from '../utils/walletUtils';
 import { base58ToUint8Array, uint8ArrayToBase58 } from '../utils/base58Utils';
+import exp from 'constants';
 
 export async function handleItemPickup(req: any) {
     const { network, tokenAddress, level } = req.body
@@ -37,6 +38,23 @@ export async function handleItemDrop(req: any) {
             return false
         }
         const updatedTokenBalance: any = await GetAssetFromPlayer(tokenAddress,user.publicAddress, user.privateKey, '5',network);
+        return updatedTokenBalance;
+    }
+    catch (error) {
+        console.error(error);
+        return null
+    }
+}
+
+export async function manufactureBot(req: any) {
+    const { network, consumeTokenAddress, buildTokenAddress } = req.body
+    const user = await UserService.findByUuid(req.user.userId);
+    console.log("user", user);
+    try {
+        if (!user) {
+            return false
+        }
+        const updatedTokenBalance: any = await ManufactureBot(consumeTokenAddress,buildTokenAddress, user.privateKey, network);
         return updatedTokenBalance;
     }
     catch (error) {
