@@ -27,12 +27,11 @@ export async function handleItemPickup(req: any) {
 }
 
 export async function handleItemDrop(req: any) {
-    const { network, tokenAddress, level } = req.body
+    const { network, tokenAddress} = req.body
     const user = await UserService.findByUuid(req.user.userId);
     console.log("user", user);
     console.log("tokenAddress", tokenAddress);
     console.log("network", network);
-    const parsedLevel = parseInt(level);
     try {
         if (!user) {
             return false
