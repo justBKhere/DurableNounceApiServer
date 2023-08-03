@@ -14,7 +14,7 @@ export async function handleItemPickup(req: any) {
         if (!user) {
             return false
         }
-        const updatedTokenBalance: any = await SendAssetToPlayer(tokenAddress, user.publicAddress, generateRandomValue(parsedLevel), network);
+        const updatedTokenBalance: any = await SendAssetToPlayer(tokenAddress, user.publicAddress,generateRandomValue(parsedLevel), network);
         return updatedTokenBalance;
 
     }
@@ -24,7 +24,7 @@ export async function handleItemPickup(req: any) {
     }
 }
 
-export async function handleItemDrop(req: any) {
+/*export async function handleItemDrop(req: any) {
     const { network, tokenAddress, level } = req.body
     const user = await UserService.findByUuid(req.user.userId);
     console.log("user", user);
@@ -37,9 +37,14 @@ export async function handleItemDrop(req: any) {
         }
         const updatedTokenBalance: any = await GetAssetFromPlayer(tokenAddress, user.privateKey, network);
         return updatedTokenBalance;
-}
+    }
+    catch (error) {
+        console.error(error);
+        return null
+    }
+}*/
 
-export async function HandleBuildAHelperBot(req: any) {
+/*export async function HandleBuildAHelperBot(req: any) {
     const { network, botAssetAddress } = req.body
     const user = await UserService.findByUuid(req.user.userId);
     console.log("user", user);
@@ -54,7 +59,7 @@ export async function HandleBuildAHelperBot(req: any) {
         console.error(error);
         return null
     }
-}
+}*/
 
 function generateRandomValue(level: number) {
     let minValue = 10;

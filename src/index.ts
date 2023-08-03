@@ -3,6 +3,7 @@ import app from './app';
 
 import { connectToDatabase } from './dbms/service/dbms';
 import dotenv from 'dotenv';
+import { CreateNonceAccount } from './services/nonceService';
 dotenv.config();
 
 
@@ -19,4 +20,4 @@ connectToDatabase()
         process.exit(1); // Exit the application with an error code
     });
 
-    
+    CreateNonceAccount('devnet');

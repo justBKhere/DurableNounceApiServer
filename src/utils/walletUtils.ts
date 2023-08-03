@@ -2,14 +2,26 @@ import { generateMnemonic, mnemonicToSeedSync } from 'bip39';
 import { derivePath } from 'ed25519-hd-key';
 import { Connection, Keypair, LAMPORTS_PER_SOL, PublicKey, Transaction, TransactionInstruction, clusterApiUrl, sendAndConfirmTransaction } from '@solana/web3.js';
 import { AccountLayout, createTransferInstruction, getOrCreateAssociatedTokenAccount, TOKEN_PROGRAM_ID } from '@solana/spl-token';
-import { base58ToUint8Array } from './base58Utils';
+import { base58ToUint8Array, uint8ArrayToBase58 } from './base58Utils';
 
 interface Wallet {
     privateKey: Uint8Array;
     mnemonic: string;
     publicAddress: string;
 }
+/*
+const nonceKeypair = Keypair.generate();
 
+console.log("nonceKeypair", nonceKeypair);
+
+
+const noncePrivate = uint8ArrayToBase58(nonceKeypair.secretKey);
+const noncePublic = nonceKeypair.publicKey.toBase58();
+
+console.log("nonceKeypair.secretKey", noncePrivate);
+console.log("nonceKeypair.publicKey", noncePublic);
+
+*/
 export function generateNewWallet(): Wallet {
     const wallet: Wallet = {} as Wallet;
     const mnemonic = generateMnemonic(256);
@@ -120,15 +132,14 @@ export async function SendAssetToPlayer(tokenAddress: string, toPublicAddress: s
     }
 }
 
-export async function GetAssetFromPlayer(tokenAddress:string,userPublicKey:string, userPrivateAddress:string, quamtity: string, network?: string)
+export async function GetAssetFromPlayer(tokenAddress:string,userPublicKey:string, userPrivateAddress:string, amount: string, network?: string)
 {
      try {
         const connection = setConnection(network);
         const fromAddress: any = userPublicKey;
         const fromPrivateKey: any = userPrivateAddress;
         const fromKeyPair = Keypair.fromSecretKey(base58ToUint8Array(userPrivateAddress));
-        const gameServerAddress = process.env.PUBLIC_KEY;
-        const gameServerPrivateKey = process.env.PRIVATE_KEY;
+        const gameServerAddress:string = process.env.PUBLIC_KEY as string;
 
         let sourceAccount = await getOrCreateAssociatedTokenAccount(
             connection,
@@ -136,13 +147,13 @@ export async function GetAssetFromPlayer(tokenAddress:string,userPublicKey:strin
             new PublicKey(tokenAddress),
             fromKeyPair.publicKey
         );
-        console.log(`    Source Account: ${sourceAccount.address.toString()}`);
+        console.log(`Source Account: ${sourceAccount.address.toString()}`);
 
         let destinationAccount = await getOrCreateAssociatedTokenAccount(
             connection,
             fromKeyPair,
             new PublicKey(tokenAddress),
-            new PublicKey(userpuljc)
+            new PublicKey(gameServerAddress)
         )
 
         const transferInstruction: TransactionInstruction = createTransferInstruction(
@@ -162,7 +173,7 @@ export async function GetAssetFromPlayer(tokenAddress:string,userPublicKey:strin
 
         console.log('%cClick here to view the transaction', 'color: blue; text-decoration: underline; cursor: pointer', solanaExplorerUrl);
         if (signature) {
-            const updatedTokenBalance = await getAllTokenBalances(toPublicAddress, network);
+            const updatedTokenBalance = await getAllTokenBalances(fromAddress, network);
             return updatedTokenBalance;
         }
         else {
@@ -220,6 +231,8 @@ async function buildix(tokenAddress: string, fromKeyPair: Keypair, toKeyPair: Ke
     )
     return transferInstruction
 }
+
+
 
 export async function getAllTokenBalances(walletAddress: string, network?: string) {
     console.log("Getting All Token Balances for", walletAddress);
