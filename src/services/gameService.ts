@@ -48,6 +48,9 @@ export async function handleItemDrop(req: any) {
 
 export async function manufactureBot(req: any) {
     const { network, consumeTokenAddress, buildTokenAddress } = req.body
+    console.log("consumeTokenAddress", consumeTokenAddress);
+    console.log("buildTokenAddress", buildTokenAddress);
+    
     const user = await UserService.findByUuid(req.user.userId);
     console.log("user", user);
     try {
