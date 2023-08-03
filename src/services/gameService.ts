@@ -47,23 +47,29 @@ export async function handleItemDrop(req: any) {
 }
 
 export async function manufactureBot(req: any) {
-    const { network, consumeTokenAddress, buildTokenAddress } = req.body
-    console.log("consumeTokenAddress", consumeTokenAddress);
-    console.log("buildTokenAddress", buildTokenAddress);
+    const { network, buildTokenAddress } = req.body
     
-    const user = await UserService.findByUuid(req.user.userId);
-    console.log("user", user);
-    try {
-        if (!user) {
-            return false
+    console.log("buildTokenAddress", buildTokenAddress);
+    if(buildTokenAddress == "5259eCocGrfYVj1w4YqBJopihxStHD881b2Bbt3cSK1n")
+    {
+        //This will be fetched using NFT metadata in main usecase, hardcoding due to lack of time
+        const consumeTokenAddress = ["CLNX8gTNWFrhVPT5ED39YKgHsfPC8qitxgxqBQKiZ38k","2t5YSZjQhiWxPzoBQFeivpv2EBfjb6pYXcaEC7arCcyj","CjeGjYdCu4ccwdtaGXbbxeHsN6UV5CUr8RYEubpbvH19"];
+        const user = await UserService.findByUuid(req.user.userId);
+        console.log("user", user);
+        try {
+            if (!user) {
+                return false
+            }
+            const updatedTokenBalance: any = await ManufactureBot(consumeTokenAddress,buildTokenAddress, user.privateKey, network);
+            return updatedTokenBalance;
         }
-        const updatedTokenBalance: any = await ManufactureBot(consumeTokenAddress,buildTokenAddress, user.privateKey, network);
-        return updatedTokenBalance;
+        catch (error) {
+            console.error(error);
+            return null
+        }
     }
-    catch (error) {
-        console.error(error);
-        return null
-    }
+    
+    
 }
 
 /*export async function HandleBuildAHelperBot(req: any) {
