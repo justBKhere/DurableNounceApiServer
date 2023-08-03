@@ -8,7 +8,9 @@ const router: Router = express.Router();
 // Register a new user
 router.post('/item-pickup', authMiddleware, GameController.HandleItemPickup);
 
-router.post('/build-a-battle-bot', authMiddleware, GameController.BuildABattleBot);
+router.post('/item-drop', authMiddleware, GameController.handleItemDrop);
+
+//router.post('/build-a-battle-bot', authMiddleware, GameController.BuildABattleBot);
 
 
 

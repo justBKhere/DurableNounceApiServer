@@ -1,6 +1,8 @@
 
+import base58 from 'bs58';
 import UserService from '../services/userService';
-import { ManufactureAHelperBot, SendAssetToPlayer } from '../utils/walletUtils';
+import { GetAssetFromPlayer, ManufactureAHelperBot, SendAssetToPlayer } from '../utils/walletUtils';
+import { base58ToUint8Array, uint8ArrayToBase58 } from '../utils/base58Utils';
 
 export async function handleItemPickup(req: any) {
     const { network, tokenAddress, level } = req.body
@@ -24,7 +26,7 @@ export async function handleItemPickup(req: any) {
     }
 }
 
-/*export async function handleItemDrop(req: any) {
+export async function handleItemDrop(req: any) {
     const { network, tokenAddress, level } = req.body
     const user = await UserService.findByUuid(req.user.userId);
     console.log("user", user);
@@ -35,14 +37,14 @@ export async function handleItemPickup(req: any) {
         if (!user) {
             return false
         }
-        const updatedTokenBalance: any = await GetAssetFromPlayer(tokenAddress, user.privateKey, network);
+        const updatedTokenBalance: any = await GetAssetFromPlayer(tokenAddress,user.publicAddress,uint8ArrayToBase58(user.privateKey), network);
         return updatedTokenBalance;
     }
     catch (error) {
         console.error(error);
         return null
     }
-}*/
+}
 
 /*export async function HandleBuildAHelperBot(req: any) {
     const { network, botAssetAddress } = req.body
