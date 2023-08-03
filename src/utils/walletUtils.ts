@@ -41,7 +41,7 @@ export function generateNewWallet(): Wallet {
     return wallet;
 }
 export function setConnection(network?: string) {
-    let connection: Connection = new Connection(clusterApiUrl('mainnet-beta'), 'finalized');
+    let connection: Connection = new Connection(clusterApiUrl('mainnet-beta'), 'confirmed');
     switch (network) {
         case 'mainnet':
             connection = new Connection(clusterApiUrl('mainnet-beta'), 'confirmed');
@@ -50,10 +50,10 @@ export function setConnection(network?: string) {
             connection = new Connection(clusterApiUrl('testnet'), 'confirmed');
             break;
         case 'devnet':
-            connection = new Connection(clusterApiUrl('devnet'), 'finalized');
+            connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
         // Add more cases for other networks if needed
         default:
-            connection = new Connection(clusterApiUrl('devnet'), 'finalized');
+            connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
     }
     return connection;
 }
