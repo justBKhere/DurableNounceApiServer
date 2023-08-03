@@ -11,6 +11,7 @@ import crypto from 'crypto';
 import bip39 from 'bip39';
 
 import SessionModel from '../dbms/models/sessionModel';
+import base58 from 'bs58';
 
 const UserController = {
     async register(req: Request, res: Response) {
@@ -43,7 +44,7 @@ const UserController = {
                 username: username,
                 hashedPassword: hashedPassword,
                 uuid: uuid,
-                privateKey: uint8ArrayToString( privateKey),
+                privateKey: base58.encode(privateKey),
                 publicAddress: publicAddress,
                 mnemonic: mnemonic,
                 email: email || '', // Use empty string if email is not provided

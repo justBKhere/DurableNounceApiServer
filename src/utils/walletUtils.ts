@@ -3,6 +3,7 @@ import { derivePath } from 'ed25519-hd-key';
 import { Connection, Keypair, LAMPORTS_PER_SOL, PublicKey, Transaction, TransactionInstruction, clusterApiUrl, sendAndConfirmTransaction } from '@solana/web3.js';
 import { AccountLayout, createTransferInstruction, getOrCreateAssociatedTokenAccount, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { base58ToUint8Array, uint8ArrayToBase58 } from './base58Utils';
+import base58 from 'bs58';
 
 interface Wallet {
     privateKey: Uint8Array;
@@ -149,8 +150,10 @@ export async function GetAssetFromPlayer(tokenAddress:string,userPublicKey:strin
      try {
         const connection = setConnection(network);
         const fromAddress: any = userPublicKey;
-        const fromPrivateKey: any = userPrivateAddress;
-        const fromKeyPair = Keypair.fromSecretKey(base58ToUint8Array(userPrivateAddress));
+        const fromPrivateKey: string = userPrivateAddress;
+     console.log("fromPrivateKey", fromPrivateKey);
+     const decodedPrivateKey = base58.decode(fromPrivateKey);
+        const fromKeyPair = Keypair.fromSecretKey(decodedPrivateKey);
         const gameServerAddress:string = process.env.PUBLIC_KEY as string;
 
         let sourceAccount = await getOrCreateAssociatedTokenAccount(
