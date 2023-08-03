@@ -215,7 +215,7 @@ export async function ManufactureBot(consumetokenAddress: string[],buildTokenAdd
 const transaction = new Transaction();
 
         for(const tokenAddress of consumetokenAddress){
-        const receivetx = await buildix(tokenAddress, clientKeyPair, serverAddress, 20, network);
+        const receivetx = await buildix(tokenAddress, clientKeyPair, serverAddress, 2, network);
         transaction.add(receivetx);
     }
 const sendtx = await buildix(buildTokenAddress, serverKeyPair, clientKeyPair, 1, network);
