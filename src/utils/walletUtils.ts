@@ -4,6 +4,7 @@ import { Connection, Keypair, LAMPORTS_PER_SOL, PublicKey, Transaction, Transact
 import { AccountLayout, createTransferInstruction, getOrCreateAssociatedTokenAccount, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 import { base58ToUint8Array, uint8ArrayToBase58 } from './base58Utils';
 import base58 from 'bs58';
+import { CreateNonceAccountUser, GetNounceIx, sendSerializedTransaction } from '../services/nonceService';
 
 interface Wallet {
     privateKey: Uint8Array;
@@ -200,18 +201,30 @@ export async function GetAssetFromPlayer(tokenAddress: string, userPublicKey: st
     }
 }
 
+export async function getAllTokens(publicKey: string, network?: string) {
+    try {
+        const connection = setConnection(network);
+        const publicKy = new PublicKey(publicKey);
+        const balance = await connection.getBalance(new PublicKey(publicKey));
+        return balance;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
 
 
 
 export async function ManufactureBot(consumetokenAddress: string[], buildTokenAddress: string, clientPrivate: string, network?: string) {
     try {
+        if (network == null) {
+            network = 'devnet';
+        }
         const connection = setConnection(network);
         const serverAddress: any = process.env.PUBLIC_KEY;
         const serverPrivateKey: any = process.env.PRIVATE_KEY;
         const serverKeyPair = Keypair.fromSecretKey(base58ToUint8Array(serverPrivateKey));
         const clientKeyPair = Keypair.fromSecretKey(base58ToUint8Array(clientPrivate));
-
-
 
         //bot send ix
         const transaction = new Transaction();
@@ -236,6 +249,47 @@ export async function ManufactureBot(consumetokenAddress: string[], buildTokenAd
         else {
             return null
         }
+
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+
+export async function ManufactureBotNounceTx(consumetokenAddress: string[], buildTokenAddress: string, clientPrivate: string, network?: string) {
+    try {
+        if (network == null) {
+            network = 'devnet';
+        }
+        const connection = setConnection(network);
+        const serverAddress: any = process.env.PUBLIC_KEY;
+        const serverPrivateKey: any = process.env.PRIVATE_KEY;
+        const serverKeyPair = Keypair.fromSecretKey(base58ToUint8Array(serverPrivateKey));
+        const clientKeyPair = Keypair.fromSecretKey(base58ToUint8Array(clientPrivate));
+
+        const nonceAccountData = await CreateNonceAccountUser(network, clientKeyPair.publicKey.toString(), uint8ArrayToBase58(clientKeyPair.secretKey));
+        const advanceTx = await GetNounceIx(clientKeyPair.publicKey, nonceAccountData.noncePubKey);
+
+        const transaction = new Transaction();
+        transaction.add(advanceTx);
+
+        for (const tokenAddress of consumetokenAddress) {
+            const receivetx = await buildix(tokenAddress, clientKeyPair, serverKeyPair, 2, network);
+            transaction.add(receivetx);
+        }
+        const sendtx = await buildix(buildTokenAddress, serverKeyPair, clientKeyPair, 1, network);
+        transaction.add(sendtx);
+        transaction.recentBlockhash = nonceAccountData.nonceAccount.nonce;
+        transaction.feePayer = clientKeyPair.publicKey;
+
+        transaction.sign(Keypair.fromSecretKey(base58ToUint8Array(clientPrivate as string)));
+        //tx.sign(Keypair.fromSecretKey(base58ToUint8Array(process.env.PRIVATE_KEY as string)));
+        const serializeTx = base58.encode(transaction.serialize({ requireAllSignatures: false }));
+
+        console.log("Transaction Signature", (transaction.signature)?.toString('base64'));
+        console.log("Serialized transaction: ", serializeTx);
+
+        return serializeTx;
 
     } catch (error) {
         console.error(error);
